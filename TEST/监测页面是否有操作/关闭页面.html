@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<h1>监测页面是否有操作</h1>
+		<script src="../js/jquery-1.11.3.js"></script>
+		<script>
+			window.onload = function() {
+				var noActionCloseWindow = {
+					timer: null,
+					startCount: function() {
+						console.log('开始倒计时');
+						this.timer = setTimeout(function() {
+							//							console.log('aaa');
+							//							alert('aaa');
+							$.ajax({
+								url: '1.php'
+
+							})
+
+						}, 5000);
+					},
+					reset: function() {
+						console.log('你动了');
+						clearTimeout(this.timer);
+						this.startCount();
+					}
+				}
+
+				window.onkeydown = function() {
+
+						noActionCloseWindow.reset();
+					}
+					//				window.onmousedown=function(e){
+					//					e.stopPropagation();
+					//					noActionCloseWindow.reset();
+					//				}
+					//				window.addEventListener('onmousedown',function(){
+					//					noActionCloseWindow.reset();
+					//				},true);
+				$('window').on('mousedown', function() {})
+				window.onmousemove = function() {
+					noActionCloseWindow.reset();
+				}
+
+			}
+
+//			window.onbeforeunload = onbeforeunload_handler;
+//			window.onunload = onunload_handler;
+//
+//			function onbeforeunload_handler() {
+////				var warning = "确认退出?";
+////				return warning;
+//			}
+//
+//			function onunload_handler() {
+//				var warning = "谢谢光临";
+//				alert(warning);
+//			}
+			
+			window.onunload=function(){
+				location.href="http://www.baidu.com";
+			}
+		</script>
+	</body>
+
+</html>

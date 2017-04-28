@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<span id="howLongToDL"></span>
+		<script>
+			//		console.log(new Date().getDate());
+			var DL = new Date(1491424561231);
+			console.log(DL);
+			setInterval(howLongToDeadLine.bind(this,DL,'howLongToDL'), 1000);
+
+			function howLongToDeadLine(deadLine,selector) {
+				var date1 = new Date(deadLine);
+				var totalSecs = (date1-new Date()) / 1000;
+				var days = Math.floor(totalSecs / 3600 / 24);
+				var hours = Math.floor((totalSecs - days * 24 * 3600) / 3600);
+				var mins = Math.floor((totalSecs - days * 24 * 3600 - hours * 3600) / 60);
+				var secs = Math.floor((totalSecs - days * 24 * 3600 - hours * 3600 - mins * 60));
+//				if(days != 0) {
+					document.getElementById(selector).innerText = "　距离结束：" + days + "天" + hours + "小时" + mins + "分钟" + secs + "秒";
+//				} else if(hours == 0 && mins == 0) {
+//					document.getElementById(selector).innerText = "　距离结束：" + secs + "秒";
+//				} else if(hours == 0 && mins != 0) {
+//					document.getElementById(selector).innerText = "　距离结束：" + mins + "分钟" + secs + "秒";
+//				} else if(hours != 0) {
+//					document.getElementById(selector).innerText = "　距离结束：" + hours + "小时" + mins + "分钟" + secs + "秒";
+//				}
+			}
+			howLongToDeadLine(DL,'howLongToDL');
+			
+		</script>
+	</body>
+
+</html>

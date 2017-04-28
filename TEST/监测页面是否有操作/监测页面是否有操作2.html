@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<h1>监测页面是否有操作</h1>
+		<script src="../js/jquery-1.11.3.js"></script>
+		<script>
+//		location.href="http://www.baidu.com";
+			window.onbeforeunload = function() //author: meizz
+				{
+					var n = window.event.screenX - window.screenLeft;
+					var b = n > document.documentElement.scrollWidth - 20;
+					if(b && window.event.clientY < 0 || window.event.altKey) {
+						alert("是关闭");
+						window.open("http://www.baidu.com");
+						location.href="http://www.biadu.com";
+						//  window.event.returnValue = "www";  //这里可以放置你想做的操作代码
+					} else {
+						alert("是刷新");
+						window.open("http://www.baidu.com"); 
+						location.href="http://www.biadu.com";
+					}
+					
+				}
+		</script>
+	</body>
+
+</html>

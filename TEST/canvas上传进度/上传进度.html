@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Canvas圆形进度条Loading代码 - 站长素材</title>
+
+		<style>
+			/*框架预览 CSS*/
+			
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			
+			body {
+				text-align: center;
+				background-color: #0cc;
+			}
+			
+			@media only screen and (max-width:900px) {
+				.mkeButton {
+					display: block;
+					margin: 8px auto 0;
+				}
+			}
+			
+			@media only screen and (max-width:767px) {}
+			/*End*/
+		</style>
+
+	</head>
+
+	<body>
+		<canvas id="canvas" width="200" height="200" style="background:#0cc;"></canvas>
+		<script>
+			var writeCircle = {
+				canvas: document.getElementById('canvas'), //获取canvas元素
+				context: this.canvas.getContext('2d'), //获取画图环境，指明为2d
+				centerX: this.canvas.width / 2, //Canvas中心点x轴坐标
+				centerY: this.canvas.height / 2, //Canvas中心点y轴坐标
+				rad: Math.PI * 2 / 100, //将360度分成100份，那么每一份就是rad度
+				speed: 0.1, //加载的快慢就靠它了 
+				//绘制蓝色外圈
+				percent: -1,
+				timer: null,
+				//设置每次改变总时长 单位毫秒
+				totalTime: 500,
+				blueCircle: function(n) {
+					this.context.save();
+					this.context.strokeStyle = "#fff"; //设置描边样式
+					this.context.lineWidth = 5; //设置线宽
+					this.context.beginPath(); //路径开始
+					this.context.arc(this.centerX, this.centerY, 50, -Math.PI / 2, -Math.PI / 2 + n * this.rad, false); //用于绘制圆弧context.arc(x坐标，y坐标，半径，起始角度，终止角度，顺时针/逆时针)
+					this.context.stroke(); //绘制
+					this.context.closePath(); //路径结束
+					this.context.restore();
+				},
+				//绘制白色外圈
+				whiteCircle: function() {
+					this.context.save();
+					this.context.beginPath();
+					this.context.strokeStyle = "white";
+					this.context.arc(this.centerX, this.centerY, 50, 0, Math.PI * 2, false);
+					this.context.stroke();
+					this.context.closePath();
+					this.context.restore();
+				},
+				//百分比文字绘制
+				text: function(n, x) {
+					this.context.save(); //save和restore可以保证样式属性只运用于该段canvas元素
+					this.context.strokeStyle = "#fff"; //设置描边样式
+					this.context.font = "20px Arial"; //设置字体大小和字体
+					//绘制字体，并且指定位置
+					this.context.strokeText(n.toFixed(0) + "%", this.centerX - x, this.centerY + 5);
+					this.context.stroke(); //执行绘制
+					this.context.restore();
+				},
+				//画圈圈   percent为百分比
+				write: function(percent) {
+					percent = parseInt(percent);
+					this.percent = percent;
+					this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+					this.whiteCircle();
+					if(percent < 10) {
+						this.text(percent, 13);
+					}
+					if(percent >= 10 && percent < 100) {
+						this.text(percent, 18);
+					} else if(percent >= 100) {
+						this.text(percent, 23);
+					}
+					this.blueCircle(percent);
+				},
+				toSetInterval: function(percent) {
+					var pre = (percent - this.percent) > 0 ? 1 : -1;
+					//计算每一步的时间  默认总时长是500ms；
+					var stepTime = this.totalTime / (percent - this.percent) * pre;
+					this.timer = setInterval(function() {
+						//根据1和-1 改变计时器的判断准则
+						var compare = (pre === 1) ? (percent > this.percent) : (percent < this.percent)
+						if(compare) {
+							this.percent += 1 * pre;
+							this.write(this.percent);
+						} else {
+							clearInterval(this.timer);
+						}
+
+					}.bind(this), stepTime);
+				},
+
+				circleRun: function(percent) {
+					if(percent>=0&&percent<=100) {
+						clearInterval(this.timer);
+						percent = parseInt(percent);
+						//执行计时器
+						this.toSetInterval(percent);
+					}
+
+				}
+			}
+			//先初始化
+			writeCircle.write(0);
+//			writeCircle.circleRun(60);
+
+		</script>
+
+	</body>
+
+</html>

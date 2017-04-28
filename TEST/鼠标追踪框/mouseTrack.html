@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+	<head>
+		<title>标题</title>
+		<meta charset="utf-8"/>
+		<meta name="Keywords" content="">
+		<meta name="Decription" content="">
+		
+		<style>
+			.mouseTrackFather{
+				/*必要属性*/
+				list-style:none;
+				position:relative;
+				overflow:hidden;
+				margin:0;
+				padding:0;
+			}
+			.mouseTrackChild{
+				/*必要属性*/
+				text-align:center;
+				position:relative;
+				/*可改属性*/
+				transition:all .3s linear;
+/*				float:left;*/
+				color:blue;
+				padding:3px 5px;
+				width:50px;
+			}
+			.changeColor{
+				/*可改属性*/
+				color:white;
+			}
+			.mouseTrackChild:last-child{
+				/*必要属性*/
+				z-index:-1;
+				position:absolute;
+				top:0;
+				left:0;
+				/*可改属性*/
+				transition:all .15s linear; 
+				background:blue;
+			}
+		</style>
+	</head>
+	<body>	
+		<ul id="u1">
+			<li>AAA</li>
+			<li>BBB</li>
+			<li>CCC</li>
+			<li>DDD</li>
+			<li>EEE</li>
+			<li></li>
+		</ul>
+		<script src="jquery-1.11.3.js"></script>
+		<script>
+			if(window.jQuery===undefined)
+				throw new Error("mouseTrack插件依赖于jQuery");
+			$.fn.mouseTrack=function(){
+				$ul=this;
+				//给父元素、子元素添加class
+				$ul.addClass("mouseTrackFather").children(":first").addClass("mouseTrackChild changeColor").siblings().addClass("mouseTrackChild");
+				//给最后一个子元素设置宽高
+				var width=$ul.children(":first").css("width");
+				var height=$ul.children(":first").css("height");
+				$ul.children(":last").css("width",width).css("height",height);
+				//为除最后一个元素外的元素添加添加鼠标移入事件
+				$ul.on("mouseenter",".mouseTrackChild:not(:last)",function(e){
+					var position=$(e.target).position();
+					$(e.target).addClass("changeColor").siblings(".changeColor").removeClass("changeColor");
+					$(e.target).siblings(":last").css("top",position.top);
+					$(e.target).siblings(":last").css("left",position.left);
+				});
+			}
+			
+			
+			$("#u1").mouseTrack();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Generator" content="EditPlus®">
+  <meta name="Author" content="">
+  <meta name="Keywords" content="">
+  <meta name="Description" content="">
+  <title>Document</title>
+  <style>
+    .test {
+        width: 200px;
+        height: 200px;
+        color:white;
+    }
+</style>
+
+ </head>
+ <body>
+  <div>
+    <a href="#/aaaa/bcd">hash=aaaa/bcd 匹配/aaaa/:id</a>
+</div>
+<div>
+    <a href="#/bbbb">hash=bbbb 匹配/bbbb(/:name)</a>
+</div>
+<div>
+    <a href="#/bbbb/ddd">hash=bbbb/ddd 匹配/bbbb(/:name)</a>
+</div>
+<div>
+    <a href="#/cccc/s/d">hash=cccc/s/d 匹配cccc/*</a>
+</div>
+<div class="test">
+</div>
+<script src="jquery-1.11.3.js"></script>
+<script src="1.js"></script>
+<script>
+        var router = new Router();
+        var test = $('.test');
+        router.on('/', function () {
+			console.log("模块1被调用");
+            test.css('background-color', 'green').css('color','white').html('我是绿色');
+        })
+        router.on('/aaaa/:id', function (id) {
+			console.log("模块2被调用");
+            console.log(id);
+            test.css('background-color', 'red').css('color','white').html('我是红色');
+        })
+        router.on('/bbbb(/:name)', function (name) {
+			console.log("模块3被调用");
+            console.log(name);
+            test.css('background-color', 'yellow').css('color','red').html('我是黄色');
+        })
+        router.on('/cccc/*', function (x) {
+			console.log("模块4被调用");
+            console.log(x);
+            test.css('background-color', 'black').css('color','white').html('我是黑色');
+        })
+        router.init();
+</script>
+ </body>
+</html>

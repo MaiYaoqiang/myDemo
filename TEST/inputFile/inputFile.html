@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			.file {
+				position: relative;
+				display: inline-block;
+				background: #D0EEFF;
+				border: 1px solid #99D3F5;
+				border-radius: 4px;
+				padding: 4px 12px;
+				overflow: hidden;
+				color: #1E88C7;
+				text-decoration: none;
+				text-indent: 0;
+				line-height: 20px;
+			}
+			
+			.file input {
+				position: absolute;
+				font-size: 100px;
+				right: 0;
+				top: 0;
+				opacity: 0;
+			}
+			
+			.file:hover {
+				background: #AADFFD;
+				border-color: #78C3F3;
+				color: #004974;
+				text-decoration: none;
+			}
+			.filePreview{
+				width:300px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<a href="javascript:;" class="file">选择文件
+			<input type="file" name="" id="">
+		</a>
+		<div class="fileerrorTip"></div>
+		<div class="showFileName"></div>
+		<img class="filePreview" src="" alt="" />
+
+		<script src="../js/jquery-1.11.3.js"></script>
+		<script>
+			$(".file").on("change", "input[type='file']", function(e) {
+				var file = e.target.files || e.dataTransfer.files;
+				var filePath = $(this).val();
+				if(filePath.indexOf("jpg") != -1 || filePath.indexOf("png") != -1) {
+					$(".fileerrorTip").html("").hide();
+					var arr = filePath.split('\\');
+					var fileName = arr[arr.length - 1];
+					$(".showFileName").html(fileName);
+					if(file) {
+						var reader = new FileReader();
+						reader.readAsDataURL(file[0]); 
+						reader.onload = function() {
+							$('.filePreview').attr('src',this.result);
+						}
+//						reader.readAsDataURL(file);
+					}
+
+				} else {
+					$(".showFileName").html("");
+					$(".fileerrorTip").html("您未上传文件，或者您上传文件类型有误！").show();
+					return false
+				}
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			.succ {
+				color: green;
+			}
+			
+			.err {
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div>
+			<label for="name"></label>
+			<input type="text" id="name" />
+			<span class="info"></span>
+		</div>
+
+		<div>
+			<label for="email"></label>
+			<input type="text" id="email" />
+			<span class="info"></span>
+		</div>
+		<button id="testBtn">尝试提交</button>
+
+		<script src="../js/jquery-1.11.3.js"></script>
+		<script>
+			var formTestObj = {
+				init: function() {
+					this.TestPhone.prototype = this.phonePrototype;
+					this.TestEmail.prototype = this.emailPrototype;
+					this.TestPasswordAgain.prototype = this.passwordAgainPrototype;
+					this.TestRequired.prototype = this.requiredPrototype;
+					this.TestPassword.prototype = this.passwordPrototype;
+				},
+				ajaxTestObject:{
+					//用于绑定
+					pinless:function(url){
+						this.url = url;
+						var ajaxObj=formTestObj.ajaxTestObject;
+						this.ajaxMsg = ajaxObj.ajaxMsg;
+						this.ajaxTest=ajaxObj.ajaxTest;
+						this.test=ajaxObj.test;
+					},
+					ajaxMsg : {
+							status: false, //是否使用ajax
+							returnMsg: false,
+							errMsg: '号码有误',
+							duration: 300, //发送请求延缓时间
+							timer: null,
+							method:'POST'
+					},
+					ajaxTest: function() {
+						this.ajaxMsg.status = true;
+						$(this.selector).on('keyup', function() {
+							clearTimeout(this.ajaxMsg.timer);
+							this.ajaxMsg.timer = setTimeout(function() {
+								var val = $(this.selector).val();
+								$.ajax({
+									url: this.url,
+									method: this.ajaxMsg.method,
+									data: val,
+									success: function(data) {
+										if(Number(data.code) === 1) {
+											this.changeStatus(data.msg, this.succClass, this.errClass);
+											this.ajaxMsg.returnMsg = true;
+										} else {
+											this.ajaxMsg.errMsg = data.msg;
+											this.changeStatus(this.ajaxMsg.errMsg, this.errClass, this.succClass);
+											this.ajaxMsg.returnMsg = false;
+										}
+									}.bind(this),
+									error: function() {
+
+									}.bind(this)
+
+								});
+							}.bind(this), this.ajaxMsg.duration)
+
+						}.bind(this));
+						
+					},
+					test:function(){
+						this.changeStatus(this.ajaxErrMsg, this.errClass, this.succClass);
+						return this.ajaxMsg.returnMsg;
+					}
+				},
+				//电话号码验证
+				phonePrototype: {
+					reg: /^(\+86|0086)?\s*1[34578]\d{9}$/, //要判断的正则
+					succMsg: '手机号输入正确', //正确信息
+					errMsg1: '手机号不能为空', //错误信息1
+					errMsg2: '手机号格式不正确', //错误信息2
+					succClass: 'succ', //正确时的类名
+					errClass: 'err', //错误时的类名
+					infoSelector: '.info', //提示信息容器的类名(注意是在input兄弟元素里找)
+					test: function() {
+						if(this.ajaxMsg) {
+							this.changeStatus(this.ajaxErrMsg, this.errClass, this.succClass);
+							return this.ajaxMsg.returnMsg;
+						};
+						var val = $(this.selector).val();
+						if(val === '') { //若为空
+							this.changeStatus(this.errMsg1, this.errClass, this.succClass);
+							return false;
+						} else if(this.reg.test(val) === false) { //若正则不通过
+							this.changeStatus(this.errMsg2, this.errClass, this.succClass);
+							return false;
+						} else {
+							this.changeStatus(this.succMsg, this.succClass, this.errClass);
+							return true;
+						}
+					},
+					changeStatus: function(msg, addClass, removeClass) {
+						$(this.selector).siblings(this.infoSelector).html(msg).addClass(addClass).removeClass(removeClass);
+					},
+					init: function() {
+						$(this.selector).on('keyup', function() {
+							this.test();
+						}.bind(this));
+					}
+
+				},
+				TestPhone: function(selector, url) {
+					this.selector = selector; //input的选择器
+					if(url) {
+						formTestObj.ajaxTestObject.pinless.call(this,url);
+					}
+				},
+				
+				//邮箱验证
+				emailPrototype:{
+					reg : /^\w+@[a-zA-Z0-9]{2,}(.[a-zA-Z0-9]{2,3}){1,2}$/, //要判断的正则
+					succMsg : '邮箱输入正确', //正确信息
+					errMsg1 : '邮箱不能为空', //错误信息1
+					errMsg2 : '邮箱格式不正确', //错误信息2
+					succClass : 'succ', //正确时的类名
+					errClass : 'err', //错误时的类名
+					infoSelector : '.info', //提示信息容器的类名(注意是在input兄弟元素里找)
+					test : function() {
+						var val = $(this.selector).val();
+						if(val === '') { //若为空
+							this.changeStatus(this.errMsg1, this.errClass, this.succClass);
+							return false;
+						} else if(this.reg.test(val) === false) { //若正则不通过
+							this.changeStatus(this.errMsg2, this.errClass, this.succClass);
+							return false;
+						} else {
+							this.changeStatus(this.succMsg, this.succClass, this.errClass);
+							return true;
+						}
+					},
+					changeStatus : function(msg, addClass, removeClass) {
+						$(this.selector).siblings(this.infoSelector).html(msg).addClass(addClass).removeClass(removeClass);
+					},
+					init : function() {
+						$(this.selector).on('keyup', function() {
+							this.test();
+						}.bind(this));
+					}
+				},
+				TestEmail: function(selector,url) {
+					this.selector = selector; //input的选择器
+					if(url) {
+						formTestObj.ajaxTestObject.pinless.call(this,url);
+					}
+				},
+				
+				//密码是否一致
+				passwordAgainPrototype:{
+					
+					succMsg : '密码正确', //正确信息
+					errMsg1 : '密码不能为空', //错误信息1
+					errMsg2 : '两次密码不一致', //错误信息2
+					succClass : 'succ', //正确时的类名
+					errClass : 'err', //错误时的类名
+					infoSelector : '.info', //提示信息容器的类名(注意是在input兄弟元素里找)
+					test : function() {
+						var val = $(this.selector).val();
+						var originalVal = $(this.originalSelector).val();
+						if(val === '') { //若为空
+							this.changeStatus(this.errMsg1, this.errClass, this.succClass);
+							return false;
+						} else if(val !== originalVal) { //两次密码不相等
+							this.changeStatus(this.errMsg2, this.errClass, this.succClass);
+							return false;
+						} else {
+							this.changeStatus(this.succMsg, this.succClass, this.errClass);
+							return true;
+						}
+					},
+					changeStatus : function(msg, addClass, removeClass) {
+						$(this.selector).siblings(this.infoSelector).html(msg).addClass(addClass).removeClass(removeClass);
+					},
+					init : function() {
+						$(this.selector).on('keyup', function() {
+							this.test()
+						}.bind(this));
+					}
+				},
+				TestPasswordAgain: function(selector, originalSelector,url) {
+					this.selector = selector; //当前输入框选择器
+					this.originalSelector = originalSelector; //前面输过的输入框选择器
+					if(url) {
+						formTestObj.ajaxTestObject.pinless.call(this,url);
+					}
+				},
+				
+				//必填信息验证
+				requiredPrototype:{
+					succMsg : '', //正确信息
+					errMsg1 : '该信息不能为空', //错误信息1
+					succClass : 'succ', //正确时的类名
+					errClass : 'err', //错误时的类名
+					infoSelector : '.info', //提示信息容器的类名(注意是在input兄弟元素里找)
+					test : function() {
+						var val = $(this.selector).val();
+						if(val === '') { //若为空
+							this.changeStatus(this.errMsg1, this.errClass, this.succClass);
+							return false;
+						} else {
+							this.changeStatus(this.succMsg, this.succClass, this.errClass);
+							return true;
+						}
+					},
+					changeStatus : function(msg, addClass, removeClass) {
+						$(this.selector).siblings(this.infoSelector).html(msg).addClass(addClass).removeClass(removeClass);
+					},
+					init : function() {
+						$(this.selector).on('keyup', function() {
+							this.test()
+						}.bind(this));
+					}
+				},
+				TestRequired: function(selector,url) {
+					this.selector = selector; //input的选择器
+					if(url) {
+						formTestObj.ajaxTestObject.pinless.call(this,url);
+					}
+				},
+				//密码验证
+				passwordPrototype:{
+					reg : /^([a-zA-Z]|[0-9]){6,12}$/, //要判断的正则(6-12位数字或字母)
+					succMsg : '密码输入正确', //正确信息
+					errMsg1 : '密码不能为空', //错误信息1
+					errMsg2 : '密码格式不正确', //错误信息2
+					succClass : 'succ', //正确时的类名
+					errClass : 'err', //错误时的类名
+					infoSelector : '.info', //提示信息容器的类名(注意是在input兄弟元素里找)
+					test : function() {
+						var val = $(this.selector).val();
+						if(val === '') { //若为空
+							this.changeStatus(this.errMsg1, this.errClass, this.succClass);
+							return false;
+						} else if(this.reg.test(val) === false) { //若正则不通过
+							this.changeStatus(this.errMsg2, this.errClass, this.succClass);
+							return false;
+						} else {
+							this.changeStatus(this.succMsg, this.succClass, this.errClass);
+							return true;
+						}
+					},
+					changeStatus : function(msg, addClass, removeClass) {
+						$(this.selector).siblings(this.infoSelector).html(msg).addClass(addClass).removeClass(removeClass);
+					},
+					init : function() {
+						$(this.selector).on('keyup', function() {
+							this.test()
+						}.bind(this));
+					}
+				},
+				TestPassword: function(selector,url) {
+					this.selector = selector; //input的选择器
+					if(url) {
+						formTestObj.ajaxTestObject.pinless.call(this,url);
+					}
+				}
+			}
+			formTestObj.init();
+			$('#testBtn').on('click', function() {
+				if(phone.test() && email.test()) {
+					console.log('信息通过');
+				} else {
+					console.log('信息不通过');
+				}
+			});
+
+			var phone = new formTestObj.TestPhone('#name', '2.php');
+			var email = new formTestObj.TestEmail('#email');
+			phone.ajaxTest();//如果想要ajax请求验证， new的时候要加url 初始化要用ajaxTest();
+			email.init();//如果想要普通验证，则用此方法 
+		</script>
+
+	</body>
+
+</html>
